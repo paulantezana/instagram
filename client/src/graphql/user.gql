@@ -1,0 +1,9 @@
+mutation {
+    createUser(username: $username, password: $password, fullname: $fullname, email: $email) {
+        success
+        errors {
+            path
+            message
+        }
+    }
+}
