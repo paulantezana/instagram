@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const { graphqlExpress, graphiqlExpress } = require('apollo-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const path = require('path');
 const { fileLoader, mergeTypes, mergeResolvers } = require('merge-graphql-schemas');
@@ -22,6 +23,9 @@ const schema = makeExecutableSchema({
 
 // Initialize the app
 const app = express();
+app.use(cors({
+    origin: ["http://localhost:3000"]
+}))
 
 // The GraphQL endpoint
 app.use('/graphql', bodyParser.json(), graphqlExpress({ 
@@ -37,6 +41,6 @@ mongoose.connect('mongodb://localhost/instagram')
     .then(db => console.log('DB Connected'))
     .catch(err => console.log(err));
 
-app.listen(3000, () => {
-    console.log('Go to http://localhost:3000/graphiql to run queries!');
+app.listen(3030, () => {
+    console.log('Go to http://localhost:3030/graphiql to run queries!');
 });

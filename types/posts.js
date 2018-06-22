@@ -1,11 +1,11 @@
 module.exports = `
     type Post{
         _id: ID!
-        by: UserShort
+        by: User
         desc: String
         photo: String
-        likedBy:[UserShort]
-        comments: [UserShort]
+        likedBy:[User]
+        comments: [User]
         createdAt: String
     }
 
