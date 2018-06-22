@@ -19,9 +19,11 @@ const CREATE_USER = gql`
 
 class Signup extends Component {
     constructor(props){
-        super(props)
+        super(props);
         this.state = {
-            args: {}
+            args: {},
+            success: true,
+            errors: []
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -46,36 +48,42 @@ class Signup extends Component {
                     </Button>
                     <Divider horizontal>O</Divider>
                     <Mutation mutation={CREATE_USER}>
-                        {(createUser, { loading, error, data }) => (
-                            <div>
-        
-                                <Form onSubmit={e=>{
+                        {(createUser, { loading, error, data }) => {
+                            let success, errors;
+                            return <div>
+                                <Form onSubmit={ e => {
                                     e.preventDefault();
-                                    createUser({variables: { username: this.state.args.username, password: this.state.args.password, fullname: this.state.args.fullname, email: this.state.args.email }});
+                                    createUser({variables: this.state.args});
                                 }}>
                                     <Form.Field>
-                                        <Form.Input onChange={this.handleChange} name="email" placeholder='Número de celular o correo electrónico' icon={<Icon name='remove circle' size='large'/>} />
+                                        <Form.Input required onChange={this.handleChange} name="email" placeholder='Número de celular o correo electrónico' icon={<Icon name='remove circle' size='large'/>}/>
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.Input onChange={this.handleChange} name="fullname" placeholder='Nombre completo' icon={<Icon name='remove circle' size='large'/>}  />
+                                        <Form.Input required onChange={this.handleChange} name="fullname" placeholder='Nombre completo' icon={<Icon name='remove circle' size='large'/>}  />
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.Input onChange={this.handleChange} name="username" placeholder='Nombre de usuario' icon={<Icon name='remove circle' size='large'/>} />
+                                        <Form.Input required onChange={this.handleChange} name="username" placeholder='Nombre de usuario' icon={<Icon name='remove circle' size='large'/>} />
                                     </Form.Field>
                                     <Form.Field>
-                                        <Form.Input onChange={this.handleChange} name="password" placeholder='Contraseña' icon={<Icon name='remove circle' size='large'/>} />
+                                        <Form.Input required onChange={this.handleChange} name="password" placeholder='Contraseña' icon={<Icon name='remove circle' size='large'/>} />
                                     </Form.Field>
                                     <Button type='submit' loading={loading} disabled={ !this.state.args.username || !this.state.args.password || !this.state.args.fullname || !this.state.args.email} fluid primary>Iniciar session</Button>
                                 </Form>
-                                { data &&
-                                    <Message negative>
-                                        <Message.Header>We're sorry we can't apply that discount</Message.Header>
-                                        <p>That offer has expired</p>
-                                        { console.log(data) }
-                                    </Message>
+                                <Divider hidden />
+                                {
+                                    data &&
+                                    <div>
+                                        {
+                                            !data.createUser.success && data.createUser.errors.length &&
+                                            <Message 
+                                                header="Errors"
+                                                list={data.createUser.errors.map(error => `[${error.path}]: ${error.message}`)}
+                                                negative/>
+                                        }
+                                    </div>
                                 }
                             </div>
-                        )}
+                        }}
                     </Mutation>
                     <Divider hidden />
                     <p>Al registrarte, aceptas nuestras Condiciones, la Política de datos y la Política de cookies.</p>
