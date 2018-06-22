@@ -8,9 +8,24 @@ const formatErrors = (error, otherErrors)=>{
             const { path, message } = error[1];
             objectErrors.push({path, message})
         });
+        objectErrors = objectErrors.concat(otherErrors);
+        return objectErrors;
+    } else if (otherErrors.length){
+        return otherErrors;
     }
-    objectErrors.concat(otherErrors);
-    return objectErrors;
+
+    let uknownError = {};
+    switch (error.code) {
+        case 11000:
+            uknownError.path = "username";
+            uknownError.message = "El nombre de usuario ya existe";
+            break;
+        default:
+            uknownError.path = "Desconocido";
+            uknownError.message = error.message;
+    }
+
+    return [uknownError];
 };
 
 module.exports = {
@@ -23,15 +38,17 @@ module.exports = {
         createUser: async (parent, {password, ...args}, {models})=>{
             let otherErrors = [];
             try {
-
                 if (password.length < 8){
                     otherErrors.push({path: 'password', message: 'Password debe ser mayor a 8 caracteres'});
                 }
                 let hashPassword = await bcrypt.hash(password, 10,)
                 let user = await models.User.create({...args,password:hashPassword})
+                if (otherErrors.length){
+                    throw otherErrors;
+                }
                 return {
                     success: user && user._id,
-                    errors: []
+                    errors: [],
                 }
             } catch (error) {
                 return {
