@@ -21,6 +21,9 @@ const schema = makeExecutableSchema({
     resolvers,
 });
 
+// JWT Sercret Keys
+const SECRET = "v16sv6s1vs3d1v";
+
 // Initialize the app
 const app = express();
 app.use(cors({
@@ -31,6 +34,7 @@ app.use(cors({
 app.use('/graphql', bodyParser.json(), graphqlExpress({ 
     schema,
     context: {
+        SECRET,
         models
     }
 }));
